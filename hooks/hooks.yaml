@@ -1,0 +1,20 @@
+- id: gitlab
+#  execute-command: /Users/shaddock/workspace/go/wework-bot/gitlab/gitlab
+#  command-working-directory: /Users/shaddock/workspace/go/wework-bot/gitlab
+  execute-command: gitlab
+  command-working-directory: /opt/scripts
+  # pass-arguments-to-command:
+  pass-environment-to-command:
+  - source: header
+    envname: X-Gitlab-Event
+    name: X-Gitlab-Event
+  - source: header
+    envname: X-Gitlab-Token
+    name: X-Gitlab-Token
+  - source: url
+    name: key
+    envname: KEY
+  - source: entire-payload
+    name: payload
+    envname: payload
+  include-command-output-in-response: true
