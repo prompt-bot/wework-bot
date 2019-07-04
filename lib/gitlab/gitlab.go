@@ -44,6 +44,7 @@ func main() {
 	case gitlab.TagEventPayload:
 		content := payload.(gitlab.TagEventPayload)
 		RunTag(&content)
+		
 
 	}
 
@@ -66,7 +67,7 @@ func RunPipeline(payload gitlab.PipelineEventPayload){
 					payload.Project.Name,
 					payload.Project.Description,
 					weworkapi.MarkDownMessageColorWarning(" 运行失败"),
-					payload.Commit.Message + weworkapi.MarkDownMessageLink(payload.Commit.ID[0:8], payload.Commit.URL),
+					payload.Commit.Message + "  " + weworkapi.MarkDownMessageLink(payload.Commit.ID[0:8], payload.Commit.URL),
 					payload.Commit.Timestamp,
 					payload.Commit.Author.Name + "(" + payload.Commit.Author.Email + ")",
 				),
@@ -123,7 +124,7 @@ func RunMergeRequest(payload *gitlab.MergeRequestEventPayload) {
 					payload.Project.Name,
 					payload.Project.Description,
 					weworkapi.MarkDownMessageColorComment(" 待处理"),
-					payload.ObjectAttributes.LastCommit.Message + weworkapi.MarkDownMessageLink(payload.ObjectAttributes.LastCommit.ID[0:8], payload.ObjectAttributes.LastCommit.URL),
+					payload.ObjectAttributes.LastCommit.Message + "  " + weworkapi.MarkDownMessageLink(payload.ObjectAttributes.LastCommit.ID[0:8], payload.ObjectAttributes.LastCommit.URL),
 					payload.ObjectAttributes.LastCommit.Timestamp,
 					payload.ObjectAttributes.LastCommit.Author.Name + "(" + payload.ObjectAttributes.LastCommit.Author.Email + ")",
 					payload.ObjectAttributes.SourceBranch,
@@ -142,7 +143,7 @@ func RunMergeRequest(payload *gitlab.MergeRequestEventPayload) {
 					payload.Project.Name,
 					payload.Project.Description,
 					weworkapi.MarkDownMessageColorInfo(" 已合并"),
-					payload.ObjectAttributes.LastCommit.Message + weworkapi.MarkDownMessageLink(payload.ObjectAttributes.LastCommit.ID[0:8], payload.ObjectAttributes.LastCommit.URL),
+					payload.ObjectAttributes.LastCommit.Message + "  " + weworkapi.MarkDownMessageLink(payload.ObjectAttributes.LastCommit.ID[0:8], payload.ObjectAttributes.LastCommit.URL),
 					payload.ObjectAttributes.UpdatedAt,
 					payload.ObjectAttributes.LastCommit.Author.Name + "(" + payload.ObjectAttributes.LastCommit.Author.Email + ")",
 					payload.ObjectAttributes.SourceBranch,
@@ -159,8 +160,28 @@ func RunMergeRequest(payload *gitlab.MergeRequestEventPayload) {
 	fmt.Println(string(res))
 }
 
+// set tag event
 func RunTag(payload *gitlab.TagEventPayload)  {
-	fmt.Println(payload.UserAvatar)
+	var message interface{}
+	ref := strings.Split(payload.Ref, "/")
+	message = weworkapi.MessageMarkdown{
+		Msgtype: weworkapi.MsgtypeMarkdown,
+		Markdown: weworkapi.Markdown{
+			Content: fmt.Sprintf(
+				"# 项目:%s (%s)Merge Request %s\n > 版本: %s \n > 处理人: %s",
+				payload.Project.Name,
+				payload.Project.Description,
+				weworkapi.MarkDownMessageColorInfo("有新版本发布啦"),
+				ref[len(ref)-1:],
+				payload.UserName,
+
+			),
+		},
+	}
+	bot.SetMessage(message)
+	res, err := bot.Send()
+	errorReceiver(err)
+	fmt.Println(string(res))
 }
 
 
