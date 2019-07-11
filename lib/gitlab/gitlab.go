@@ -15,15 +15,15 @@ import (
 var req *http.Request
 var bot *weworkapi.Bot
 func init() {
-	bot = weworkapi.NewBot(getenv("KEY"))
+	bot = weworkapi.NewBot(getEnv("KEY"))
 }
 
 func main() {
-	hook, err := gitlab.New(gitlab.Options.Secret(getenv("X-Gitlab-Token")))
+	hook, err := gitlab.New(gitlab.Options.Secret(getEnv("X-Gitlab-Token")))
 	errorReceiver(err)
-	req, _ = http.NewRequest("POST", "", strings.NewReader(getenv("payload")))
-	req.Header.Add("X-Gitlab-Event", getenv("X-Gitlab-Event"))
-	req.Header.Add("X-Gitlab-Token", getenv("X-Gitlab-Token"))
+	req, _ = http.NewRequest("POST", "", strings.NewReader(getEnv("payload")))
+	req.Header.Add("X-Gitlab-Event", getEnv("X-Gitlab-Event"))
+	req.Header.Add("X-Gitlab-Token", getEnv("X-Gitlab-Token"))
 	payload, err := hook.Parse(req,
 		gitlab.PipelineEvents,
 		gitlab.MergeRequestEvents,
@@ -36,8 +36,8 @@ func main() {
 
 	switch payload.(type) {
 	case gitlab.PipelineEventPayload:
-		content := payload.(gitlab.PipelineEventPayload)
-		RunPipeline(content)
+		//content := payload.(gitlab.PipelineEventPayload)
+		//RunPipeline(content)
 	case gitlab.MergeRequestEventPayload:
 		content := payload.(gitlab.MergeRequestEventPayload)
 		RunMergeRequest(&content)
@@ -186,7 +186,7 @@ func RunTag(payload *gitlab.TagEventPayload)  {
 
 
 
-func getenv(s string) string {
+func getEnv(s string) string {
 	return os.Getenv(s)
 }
 

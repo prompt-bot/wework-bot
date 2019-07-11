@@ -10,6 +10,6 @@ func main() {
 }
 
 
-func getenv(s string) string {
+func getEnv(s string) string {
 	return os.Getenv(s)
 }
