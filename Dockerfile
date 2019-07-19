@@ -11,6 +11,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
     chmod +x /usr/local/bin/upx
 
 ENV GO111MODULE=on
+ENV GOPROXY=https://goproxy.io
 ADD . .
 RUN for obj in `ls lib/`; do echo "build ./lib/$obj/*.go into /opt/build/$obj ..."; go build -o /opt/build/$obj ./lib/$obj/*.go; upx /opt/build/$obj; done && \
     chmod +x /opt/build/* && \

@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	fmt.Println(getenv("payload"))
+	fmt.Println(getEnv("payload"))
 }
 
 
